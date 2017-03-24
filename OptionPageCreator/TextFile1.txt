@@ -1,0 +1,137 @@
+﻿Option Page Creator - Main Goals
+**************************************************
+
+1. Ease the process of creating in game option menus.
+
+2. Unify the options pages for all mods to reduce conflicting keybinds and ui space.
+
+3. Allow modders an easy architecture to install, remove and alter options dynamically and in a user friendly way.
+
+4. Allow players to enable or disable mods without deleting or moving mod folders/data
+
+
+Why use this framework? People edit my config.json fine!
+**************************************************
+
+Json is a great standard, but using this framework lowers the learning curve of installing, writing, and managing mods.
+Additionally this process allows for validation that would otherwise be impossible, and also allows the possibility for 
+all options to be managed from within the game itself.
+
+No more searching files
+No more incorrect values
+No more keybind collisions
+No more confusing option names
+Less code to maintain
+
+meaning... more time modding and more time playing!
+
+Option Page Creator was made to improve upon both new and old mods by using the config.json that smapi exports.
+To facilitate full flexibility, this framework will support two separate option menus;
+
+-One menu in the title screen for options that cannot be dynamically changed.
+-One menu inside the game for options that can be changed during runtime.
+
+
+Getting started
+**************************************************
+
+For previously created mods you most likely want to install options to the title screen.
+To add an in game option from your config, you must add options with the method:
+
+	"Toggles some cool stuff" -> will display on the option menu
+	config -> allows saving when appropriate via helper.WriteConfig
+	config.boolData -> alters the actual data
+	create{MenuType}{ElementType}( title, instanceOfYourModConfig, youModConfigData )
+
+Consider the following:
+
+Class YourModConfig {
+	bool boolData { get; set; } = true;
+}
+
+then, inside your Entry method
+
+YourModConfigData config = new YourModeConfigData(); // Instatiate the config file
+ConfigStub config = helper.ReadConfig<ConfigStub>(); // Load the config file
+createTitleMenuCheckbox( "Toggle some cool stuff", config, config.boolData ); // Create the button
+
+Option Page Creator handles the rest
+
+Additionally
+
+
+
+
+Options can also be created by a simplier format calling create{ElementType}( title, )
+
+You also have the option to create an option that maintains itself by with the method create{ElementType}( title, )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Dynamic installation and removal of mods
+**************************************************
+
+* Since adding and removing a mod dynamically is only useful within the actual game, mods using this feature are initialized after character load.
+To clarify, the initializeMod() method will be fired within the PlayerEvents.LoadedGame hook unless the mod has been deactivated
+            
+
+First, all mod functionality needs to be encapsulated within a class.
+
+Class SomeCoolMod {
+
+	SomeCoolMod(){
+		// Constructor stuff
+	}
+
+	public void coolModStuff(){
+		// However you like it done!
+	}
+
+}
+
+Second, your class needs to implement the IDynamicHook interface
+
+Class SomeCoolMod : IDynamicMod {
+
+	public void initializeMod(){
+		// all your initializing is done here instead of constructor
+	}
+
+	public void destroyMod(){
+		// cleanup any hooks and references
+	}
+
+	public void coolModStuff(){
+		// However you like it done!
+	}
+}
+
+Finally, in your Entry( IModHelper ) method, or anywhere early in your logic before PlayerEvents.LoadedGame has fired,
+you must pass an instance of your class ( preferably anonymously ) to the static method CreateDynamicMod( IDynamicMod )
+
+CreateDynamicMod( new SomeCoolMod() );
+
+The CreateDynamicMod method will automatically create, save, and load a config file that manages loading the mod on LoadedGame
+
+
+**************************************************
+**************************************************
+**************************************************
+**************************************************
+**************************************************
+**************************************************
+**************************************************

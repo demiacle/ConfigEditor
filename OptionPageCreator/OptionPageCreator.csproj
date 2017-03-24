@@ -7,8 +7,8 @@
     <ProjectGuid>{55249A47-EE88-4AD6-8F80-854FCE1FB094}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PlantAnywhere</RootNamespace>
-    <AssemblyName>PlantOnGrass</AssemblyName>
+    <RootNamespace>Demiacle.OptionPageCreator</RootNamespace>
+    <AssemblyName>OptionPageCreator</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -16,8 +16,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\SteamLibrary2\steamapps\common\Stardew Valley\Mods\PlantOnGrass\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <OutputPath>..\..\..\..\SteamLibrary2\steamapps\common\Stardew Valley\Mods\OptionPageCreator\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
@@ -31,9 +31,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntoaroxFramework">
+      <HintPath>..\..\..\..\SteamLibrary2\steamapps\common\Stardew Valley\Mods\!EntoaroxFramework\EntoaroxFramework.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553" />
     <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553" />
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Stardew Valley">
       <HintPath>..\..\..\..\..\SteamLibrary2\steamapps\common\Stardew Valley\Stardew Valley.exe</HintPath>
       <Private>False</Private>
@@ -56,14 +63,32 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConfigStub1.cs" />
+    <Compile Include="ModConfig.cs" />
     <Compile Include="ModEntry.cs" />
+    <Compile Include="OptionPage\Checkbox.cs" />
+    <Compile Include="OptionPage\ConfigButton.cs" />
+    <Compile Include="OptionPage\DropDown.cs" />
+    <Compile Include="OptionPage\ModOption.cs" />
+    <Compile Include="OptionPage\TabButton.cs" />
+    <Compile Include="OptionPage\Handler.cs" />
+    <Compile Include="OptionPage\PlusMinus.cs" />
+    <Compile Include="OptionPage\Slider.cs" />
+    <Compile Include="OptionPage\ModOptionsWindow.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TitleScreenButton.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="manifest.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="TextFile1.txt" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
