@@ -7,10 +7,9 @@ using StardewValley.BellsAndWhistles;
 namespace Demiacle.OptionPageCreator.OptionPage {
     internal class ConfigButton : ModOption {
 
-        ModOptionsWindow page;
 
         public ConfigButton( string label, ModOptionsWindow page ) : base ( label ){
-            this.page = page;
+            setPage( page);
         }
 
         public override void receiveLeftClick( int x, int y ) {
