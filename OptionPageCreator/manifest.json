@@ -1,13 +1,13 @@
 ﻿{
-  "Name": "Option Page Creator",
+  "Name": "Config Editor",
    "Author": "Demiacle",
    "Version": {
       "MajorVersion": 0,
       "MinorVersion": 1,
-      "PatchVersion": 1,
-      "Build": 1
+      "PatchVersion": 0,
+      "Build": 0
    },
-   "Description": "Provides modders with an easy way to create an option page",
-   "UniqueID": "Demiacle.OptionPageCreator",
-   "EntryDll": "OptionPageCreator.dll"
+   "Description": "Allows configs to be edited and validated in game.",
+   "UniqueID": "Demiacle.ConfigEditor",
+   "EntryDll": "ConfigEditor.dll"
 }

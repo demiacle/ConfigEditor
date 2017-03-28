@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Demiacle.OptionPageCreator</RootNamespace>
-    <AssemblyName>OptionPageCreator</AssemblyName>
+    <AssemblyName>ConfigEditor</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -16,7 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\SteamLibrary2\steamapps\common\Stardew Valley\Mods\OptionPageCreator\</OutputPath>
+    <OutputPath>..\..\..\..\SteamLibrary2\steamapps\common\Stardew Valley\Mods\ConfigEditor\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -31,9 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EntoaroxFramework">
-      <HintPath>..\..\..\..\SteamLibrary2\steamapps\common\Stardew Valley\Mods\!EntoaroxFramework\EntoaroxFramework.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553" />
     <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553" />
@@ -63,7 +60,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConfigStub1.cs" />
+    <Compile Include="OptionPage\ButtonChooser.cs" />
     <Compile Include="ModConfig.cs" />
     <Compile Include="ModEntry.cs" />
     <Compile Include="OptionPage\Checkbox.cs" />
@@ -76,6 +73,7 @@
     <Compile Include="OptionPage\Slider.cs" />
     <Compile Include="OptionPage\ModOptionsWindow.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="OptionPage\TextEditor.cs" />
     <Compile Include="TitleScreenButton.cs" />
   </ItemGroup>
   <ItemGroup>

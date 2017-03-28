@@ -4,7 +4,8 @@ using Microsoft.Xna.Framework.Input;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
 using System;
- 
+using System.Text;
+
 namespace Demiacle.OptionPageCreator.OptionPage {
     public class ModOption {
 
@@ -13,42 +14,47 @@ namespace Demiacle.OptionPageCreator.OptionPage {
         public const int defaultPixelWidth = 9;
         public Rectangle bounds;
         public string label;
-        public int whichOption;
+        public string prettyLabel;
         public bool greyedOut;
         public Action toggleOptionDelegate;
-        protected ModOptionsWindow page;
         public const int BUTTON_HEIGHT = 50;
-        protected bool listeningToKey = false;
+        public bool listeningToKey = false;
+        protected ModOptionsWindow page;
+
         /// <summary>
-        /// The base class for all custom ModOptions
+        /// The base class for all custom ModOptions. Width and height are automatically set and dependant upon the page.
         /// </summary>
-        public ModOption( string label, ModOptionsWindow page ) {
+        public ModOption( string label ) {
+            this.label = label;
+            this.prettyLabel = beutifyString( label );
+            this.bounds = new Rectangle( 0,0, ModOptionsWindow.WIDTH - 100, BUTTON_HEIGHT );
+        }
+
+        public string beutifyString( string label ) {
+            StringBuilder newText = new StringBuilder( label.Length * 2 );
+            newText.Append( Char.ToUpper( label[ 0 ] ) );
+
+            // Convert camel case into properly formated sentence
+            for( int i = 1; i < label.Length; i++ ) {
+                if( char.IsUpper( label[ i ] ) && label[ i - 1 ] != '.' && char.IsUpper( label[ i - 1 ] ) == false ) {
+                    newText.Append( ' ' );
+                }
+                if( label[ i ] == '.' ) {
+                    newText.Append( ": " );
+                } else {
+                    if( label[ i - 1 ] == '.' ) {
+                        newText.Append( Char.ToUpper( label[ i ] ) );
+                    } else {
+                        newText.Append( Char.ToLower( label[ i ] ) );
+                    }
+                }
+            }
+
+            return newText.ToString();
+        }
+
+        public void setPage( ModOptionsWindow page ) {
             this.page = page;
-            this.label = label;
-            this.bounds = new Rectangle( 0,0, page.width - 100, BUTTON_HEIGHT );
-            this.whichOption = -1;
-        }
-
-        public ModOption( string label ) : this ( label, null ) {
-        }
-
-        public ModOption( string label, int x, int y, int width, int height, int whichOption = -1 ) {
-
-            if( x == -1 )
-                x = 8 * Game1.pixelZoom;
-            if( y == -1 )
-                y = 4 * Game1.pixelZoom;
-
-            this.bounds = new Rectangle( x, y, width, height );
-            this.label = label;
-            this.whichOption = whichOption;
-        }
-
-        public ModOption( string label, Rectangle bounds, int whichOption ) {
-
-            this.whichOption = whichOption;
-            this.label = label;
-            this.bounds = bounds;
         }
 
         public virtual void receiveLeftClick( int x, int y ) {
@@ -63,7 +69,14 @@ namespace Demiacle.OptionPageCreator.OptionPage {
         public virtual void receiveKeyPress( Keys key ) {
         }
 
-        public virtual void draw( SpriteBatch b, int slotX, int slotY ) {
+        public virtual void draw( SpriteBatch b ) {
+        }
+
+        public virtual void update( GameTime time ) { 
+        }
+
+        public virtual string getHoverText() {
+            return "";
         }
     }
 }

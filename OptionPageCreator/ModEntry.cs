@@ -1,6 +1,4 @@
-﻿using Entoarox.Framework.UI;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -10,13 +8,12 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.IO;
 using Newtonsoft.Json.Linq;
-using System.Runtime.Remoting;
 using Demiacle.OptionPageCreator.OptionPage;
+using Demiacle.OptionPageCreator.OptionsPage;
 
 namespace Demiacle.OptionPageCreator {
     class ModEntry : Mod {
 
-        FrameworkMenu test = new FrameworkMenu( new Microsoft.Xna.Framework.Rectangle( 0,0,500,500) );
         public static IModHelper helper;
         private TitleScreenButton configOptionButton;
         public List<ModConfig> modConfigs = new List<ModConfig>();
@@ -24,9 +21,6 @@ namespace Demiacle.OptionPageCreator {
         public override void Entry( IModHelper helper ) {
             base.Entry( helper );
             ModEntry.helper = helper;
-
-            this.Monitor.Log( "HELLO WORLD" );
-            ConfigStub config = helper.ReadConfig<ConfigStub>();
 
             GameEvents.QuarterSecondTick += checkTitleScreen;
         }
@@ -45,11 +39,12 @@ namespace Demiacle.OptionPageCreator {
                 Type ModRegistryType = Assembly.GetAssembly( typeof( Mod ) ).GetType( "StardewModdingAPI.Framework.ModRegistry" );
                 var loadedMods = (List<IMod>) ModRegistryType.GetField( "Mods", BindingFlags.NonPublic | BindingFlags.Instance ).GetValue( helper.ModRegistry );
 
-                // parse config data of each mod
+                // Parse config data of each mod
                 foreach( var item in loadedMods ) {
                     string configFile = item.Helper.DirectoryPath + "\\config.json"; 
 
                     if( File.Exists( configFile ) ) {
+
                         dynamic configData = item.Helper.ReadConfig<object>();
                         var jObject = ( JObject ) configData;
                         var options = new List<ModOption>();
@@ -63,7 +58,7 @@ namespace Demiacle.OptionPageCreator {
                             continue;
                         }
 
-                        var modConfigElements = new ModConfig( item.ModManifest.Name, options );
+                        var modConfigElements = new ModConfig( item.ModManifest.Name, options, jObject, item.Helper );
                         modConfigs.Add( modConfigElements );
                     }
                 }
@@ -108,6 +103,59 @@ namespace Demiacle.OptionPageCreator {
                 GraphicsEvents.OnPostRenderGuiEvent -= drawButton;
                 GraphicsEvents.OnPostRenderGuiEvent += drawButton;
                 GameEvents.SecondUpdateTick -= listenForBackButton;
+                updateConfigs();
+            }
+        }
+
+        private void updateConfigs() {
+            foreach( var config in modConfigs ) {
+                foreach( var option in config.options ) {
+                    // Use dynamic for readability. All used types are within this block
+                    dynamic value = null;
+
+                    // Get value
+                    if( option is TextEditor ) {
+                        var textEditor = ( TextEditor ) option;
+                        if( textEditor.valueIsInt ) {
+                            value = Convert.ToInt32( textEditor.value );
+                        } else if( textEditor.valueIsFloat ) {
+                            value = Convert.ToDecimal( textEditor.value );
+                        } else {
+                            value = textEditor.value;
+                        }
+                    } else if( option is Checkbox ) {
+                        value = ( option as Checkbox ).isChecked;
+                    } else if( option is ButtonChooser ) {
+                        value = ( option as ButtonChooser ).value;
+                    }
+
+                    updateJSon( option.label, value, config.json );
+                }
+
+                config.helper.WriteJsonFile<JObject>( config.helper.DirectoryPath + "\\config.json", config.json );
+            }
+        }
+
+        /// <summary>
+        /// Updates the loaded JSON data for a config.
+        /// </summary>
+        /// <param name="varName">Name of the variable. Containers are represented with dot format.</param>
+        /// <param name="value">The updated value.</param>
+        /// <param name="json">The json object that will be updated.</param>
+        private void updateJSon( string varName, dynamic value, JObject json ) {
+            if( value == null ) {
+                Monitor.Log( $"The value for option {varName} is null and will not be updated. Please " );
+                return;
+            }
+
+            // Validate dynamic value?
+
+            if( varName.Contains( "." ) ) {
+                string[] splitLabel = varName.Split( '.' );
+                Type t = json[ splitLabel[ 0 ] ][ splitLabel[ 1 ] ].GetType();
+                json[ splitLabel[ 0 ] ][ splitLabel[ 1 ] ] = value;
+            } else {
+                json[ varName ] = value;
             }
         }
 
@@ -130,8 +178,6 @@ namespace Demiacle.OptionPageCreator {
         /// <param name="configData">The json object.</param>
         /// <param name="options">Json nodes found will be added to this list</param>
         private void parseJsonObject( JToken configData, List<ModOption> options ) {
-            
-            // Use Path var for fully qualified name
 
             switch( configData.Type ) {
 
@@ -149,23 +195,28 @@ namespace Demiacle.OptionPageCreator {
 
                 // Infer int
                 case JTokenType.Integer:
-                    this.Monitor.Log( $"Parse int {configData.Path} to value {configData.Value<int>()}" );
+                    var intValue = configData.Value<string>();
+                    this.Monitor.Log( $"Parse int {configData.Path} to value {intValue}" );
+                    options.Add( new TextEditor( configData.Path, intValue, valueIsInt: true ) );
                     break;
 
                 // Infer float
                 case JTokenType.Float:
-                    this.Monitor.Log( $"Parse float {configData.Path} to value {configData.Value<float>()}" );
+                    var floatValue = configData.Value<string>();
+                    this.Monitor.Log( $"Parse float {configData.Path} to value {floatValue}" );
+                    options.Add( new TextEditor( configData.Path, floatValue, valueIsFloat: true ) );
                     break;
 
                 // Infer string
                 case JTokenType.String:
-                    this.Monitor.Log( $"Parse string {configData.Path} to value {configData.Value<string>()}" );
+                    var stringValue = configData.Value<string>();
+                    this.Monitor.Log( $"Parse string {configData.Path} to value {stringValue}" );
 
                     // Infer key
                     foreach( var keyName in Enum.GetNames( typeof( Keys ) ) ) {
                         if( keyName == configData.Value<string>() ) {
-                            options.Add( new ButtonChooser( configData.Path, null) );
-                            break;
+                            options.Add( new ButtonChooser( configData.Path, stringValue ) );
+                            goto EndStringParse;
                         }
                     }
 
@@ -174,17 +225,22 @@ namespace Demiacle.OptionPageCreator {
                     // Infer joypad
                     foreach( var keyName in Enum.GetNames( typeof( Buttons ) ) ) {
                         if( keyName == configData.Value<string>() ) {
-                            options.Add( new ButtonChooser( configData.Path, null ) );
-                            break;
+                            options.Add( new ButtonChooser( configData.Path, stringValue ) );
+                            goto EndStringParse;
                         }
                     }
 
+                    // Infer editable text
+                    options.Add( new TextEditor( configData.Path, stringValue ) );
+
+                    EndStringParse:
                     break;
 
                 // Infer checkbox
                 case JTokenType.Boolean:
-                    this.Monitor.Log( $"Parse bool for type {configData.Path} to value {configData.Value<bool>()}" );
-                    options.Add( new Checkbox( configData.Path, null ) );
+                    var boolValue = configData.Value<bool>();
+                    this.Monitor.Log( $"Parse bool for type {configData.Path} to value {boolValue}" );
+                    options.Add( new Checkbox( configData.Path, boolValue ) );
                     break;
 
                 // Ignore cases

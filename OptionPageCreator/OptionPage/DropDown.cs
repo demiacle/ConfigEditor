@@ -26,7 +26,7 @@ namespace Demiacle.OptionPageCreator.OptionPage {
         /// This mod creates a custom drop down for the ModOptionsPage ** UNTESTED
         /// </summary>
         public DropDown( string label, int whichOption, int x = -1, int y = -1 )
-          : base( label, x, y, ( int ) Game1.smallFont.MeasureString( "Windowed Borderless " ).X + Game1.pixelZoom * 12, 11 * Game1.pixelZoom, whichOption ) {
+          : base( label ) {
             // set value to loaded option
             this.dropDownBounds = new Rectangle( this.bounds.X, this.bounds.Y, this.bounds.Width - Game1.pixelZoom * 12, this.bounds.Height * this.dropDownOptions.Count );
         }
@@ -55,30 +55,30 @@ namespace Demiacle.OptionPageCreator.OptionPage {
                 return;
             base.leftClickReleased( x, y );
             this.clicked = false;
-            if( this.dropDownBounds.Contains( x, y ) )
-                Game1.options.changeDropDownOption( this.whichOption, this.selectedOption, this.dropDownOptions );
-            else
+            if( this.dropDownBounds.Contains( x, y ) ) {
+                //Game1.options.changeDropDownOption( this.whichOption, this.selectedOption, this.dropDownOptions );
+            } else {
                 this.selectedOption = this.startingSelected;
+            }
             OptionsDropDown.selected = ( OptionsDropDown ) null;
         }
 
-        public override void draw( SpriteBatch b, int slotX, int slotY ) {
-            this.recentSlotY = slotY;
-            base.draw( b, slotX, slotY );
+        public override void draw( SpriteBatch b ) {
+            base.draw( b );
             float num = this.greyedOut ? 0.33f : 1f;
             if( this.clicked ) {
-                IClickableMenu.drawTextureBox( b, Game1.mouseCursors, OptionsDropDown.dropDownBGSource, slotX + this.dropDownBounds.X, slotY + this.dropDownBounds.Y, this.dropDownBounds.Width, this.dropDownBounds.Height, Color.White * num, ( float ) Game1.pixelZoom, false );
+                IClickableMenu.drawTextureBox( b, Game1.mouseCursors, OptionsDropDown.dropDownBGSource,  this.dropDownBounds.X, this.dropDownBounds.Y, this.dropDownBounds.Width, this.dropDownBounds.Height, Color.White * num, ( float ) Game1.pixelZoom, false );
                 for( int index = 0; index < this.dropDownOptions.Count; ++index ) {
                     if( index == this.selectedOption )
-                        b.Draw( Game1.staminaRect, new Rectangle( slotX + this.dropDownBounds.X, slotY + this.dropDownBounds.Y + index * this.bounds.Height, this.dropDownBounds.Width, this.bounds.Height ), new Rectangle?( new Rectangle( 0, 0, 1, 1 ) ), Color.Wheat, 0.0f, Vector2.Zero, SpriteEffects.None, 0.975f );
-                    b.DrawString( Game1.smallFont, this.dropDownOptions[ index ], new Vector2( ( float ) ( slotX + this.dropDownBounds.X + Game1.pixelZoom ), ( float ) ( slotY + this.dropDownBounds.Y + Game1.pixelZoom * 2 + this.bounds.Height * index ) ), Game1.textColor * num, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.98f );
+                        b.Draw( Game1.staminaRect, new Rectangle( this.dropDownBounds.X,  this.dropDownBounds.Y + index * this.bounds.Height, this.dropDownBounds.Width, this.bounds.Height ), new Rectangle?( new Rectangle( 0, 0, 1, 1 ) ), Color.Wheat, 0.0f, Vector2.Zero, SpriteEffects.None, 0.975f );
+                    b.DrawString( Game1.smallFont, this.dropDownOptions[ index ], new Vector2( ( float ) (  this.dropDownBounds.X + Game1.pixelZoom ), ( float ) (  this.dropDownBounds.Y + Game1.pixelZoom * 2 + this.bounds.Height * index ) ), Game1.textColor * num, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.98f );
                 }
-                b.Draw( Game1.mouseCursors, new Vector2( ( float ) ( slotX + this.bounds.X + this.bounds.Width - Game1.pixelZoom * 12 ), ( float ) ( slotY + this.bounds.Y ) ), new Rectangle?( OptionsDropDown.dropDownButtonSource ), Color.Wheat * num, 0.0f, Vector2.Zero, ( float ) Game1.pixelZoom, SpriteEffects.None, 0.981f );
+                b.Draw( Game1.mouseCursors, new Vector2( ( float ) (  this.bounds.X + this.bounds.Width - Game1.pixelZoom * 12 ), ( float ) (  this.bounds.Y ) ), new Rectangle?( OptionsDropDown.dropDownButtonSource ), Color.Wheat * num, 0.0f, Vector2.Zero, ( float ) Game1.pixelZoom, SpriteEffects.None, 0.981f );
             } else {
-                IClickableMenu.drawTextureBox( b, Game1.mouseCursors, OptionsDropDown.dropDownBGSource, slotX + this.bounds.X, slotY + this.bounds.Y, this.bounds.Width - Game1.pixelZoom * 12, this.bounds.Height, Color.White * num, ( float ) Game1.pixelZoom, false );
+                IClickableMenu.drawTextureBox( b, Game1.mouseCursors, OptionsDropDown.dropDownBGSource,  this.bounds.X,  this.bounds.Y, this.bounds.Width - Game1.pixelZoom * 12, this.bounds.Height, Color.White * num, ( float ) Game1.pixelZoom, false );
                 if( OptionsDropDown.selected == null || OptionsDropDown.selected.Equals( ( object ) this ) )
-                    b.DrawString( Game1.smallFont, this.selectedOption >= this.dropDownOptions.Count || this.selectedOption < 0 ? "" : this.dropDownOptions[ this.selectedOption ], new Vector2( ( float ) ( slotX + this.bounds.X + Game1.pixelZoom ), ( float ) ( slotY + this.bounds.Y + Game1.pixelZoom * 2 ) ), Game1.textColor * num, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.88f );
-                b.Draw( Game1.mouseCursors, new Vector2( ( float ) ( slotX + this.bounds.X + this.bounds.Width - Game1.pixelZoom * 12 ), ( float ) ( slotY + this.bounds.Y ) ), new Rectangle?( OptionsDropDown.dropDownButtonSource ), Color.White * num, 0.0f, Vector2.Zero, ( float ) Game1.pixelZoom, SpriteEffects.None, 0.88f );
+                    b.DrawString( Game1.smallFont, this.selectedOption >= this.dropDownOptions.Count || this.selectedOption < 0 ? "" : this.dropDownOptions[ this.selectedOption ], new Vector2( ( float ) (  this.bounds.X + Game1.pixelZoom ), ( float ) (  this.bounds.Y + Game1.pixelZoom * 2 ) ), Game1.textColor * num, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.88f );
+                b.Draw( Game1.mouseCursors, new Vector2( ( float ) (  this.bounds.X + this.bounds.Width - Game1.pixelZoom * 12 ), ( float ) (  + this.bounds.Y ) ), new Rectangle?( OptionsDropDown.dropDownButtonSource ), Color.White * num, 0.0f, Vector2.Zero, ( float ) Game1.pixelZoom, SpriteEffects.None, 0.88f );
             }
         }
     }

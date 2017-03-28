@@ -27,7 +27,7 @@ namespace Demiacle.OptionPageCreator.OptionPage {
         /// Plus Minus option for the ModOptionsPage ** UNTESTED
         /// </summary>
         public PlusMinus( string label, int whichOption, List<string> options, int x = -1, int y = -1 )
-          : base( label, x, y, 7 * Game1.pixelZoom, 7 * Game1.pixelZoom, whichOption ) {
+          : base( label ) {
             this.options = options;
             // set value to loaded option value
             if( x == -1 )
@@ -36,7 +36,6 @@ namespace Demiacle.OptionPageCreator.OptionPage {
                 y = 4 * Game1.pixelZoom;
             this.bounds = new Rectangle( x, y, 7 * Game1.pixelZoom * 2 + ( int ) Game1.dialogueFont.MeasureString( "%%%%" ).X, 8 * Game1.pixelZoom );
             this.label = label;
-            this.whichOption = whichOption;
             this.minusButton = new Rectangle( x, 4 + Game1.pixelZoom * 3, 7 * Game1.pixelZoom, 8 * Game1.pixelZoom );
             this.plusButton = new Rectangle( this.bounds.Right - 8 * Game1.pixelZoom, 4 + Game1.pixelZoom * 3, 7 * Game1.pixelZoom, 8 * Game1.pixelZoom );
         }
@@ -61,21 +60,20 @@ namespace Demiacle.OptionPageCreator.OptionPage {
             int selected2 = this.selected;
             if( selected1 == selected2 )
                 return;
-            Game1.options.changeDropDownOption( this.whichOption, this.selected, this.options );
         }
 
-        public override void draw( SpriteBatch b, int slotX, int slotY ) {
-            b.Draw( Game1.mouseCursors, new Vector2( ( float ) ( slotX + this.minusButton.X ), ( float ) ( slotY + this.minusButton.Y ) ), new Rectangle?( OptionsPlusMinus.minusButtonSource ), Color.White * ( this.greyedOut ? 0.33f : 1f ) * ( this.selected == 0 ? 0.5f : 1f ), 0.0f, Vector2.Zero, ( float ) Game1.pixelZoom, SpriteEffects.None, 0.4f );
-            b.DrawString( Game1.dialogueFont, this.selected >= this.options.Count || this.selected == -1 ? "" : this.options[ this.selected ], new Vector2( ( float ) ( slotX + this.minusButton.X + this.minusButton.Width + Game1.pixelZoom ), ( float ) ( slotY + this.minusButton.Y ) ), Game1.textColor );
-            b.Draw( Game1.mouseCursors, new Vector2( ( float ) ( slotX + this.plusButton.X ), ( float ) ( slotY + this.plusButton.Y ) ), new Rectangle?( OptionsPlusMinus.plusButtonSource ), Color.White * ( this.greyedOut ? 0.33f : 1f ) * ( this.selected == this.options.Count - 1 ? 0.5f : 1f ), 0.0f, Vector2.Zero, ( float ) Game1.pixelZoom, SpriteEffects.None, 0.4f );
+        public override void draw( SpriteBatch b ) {
+            b.Draw( Game1.mouseCursors, new Vector2( ( float ) (  this.minusButton.X ), ( float ) (  this.minusButton.Y ) ), new Rectangle?( OptionsPlusMinus.minusButtonSource ), Color.White * ( this.greyedOut ? 0.33f : 1f ) * ( this.selected == 0 ? 0.5f : 1f ), 0.0f, Vector2.Zero, ( float ) Game1.pixelZoom, SpriteEffects.None, 0.4f );
+            b.DrawString( Game1.dialogueFont, this.selected >= this.options.Count || this.selected == -1 ? "" : this.options[ this.selected ], new Vector2( ( float ) ( this.minusButton.X + this.minusButton.Width + Game1.pixelZoom ), ( float ) ( this.minusButton.Y ) ), Game1.textColor );
+            b.Draw( Game1.mouseCursors, new Vector2( ( float ) (  this.plusButton.X ), ( float ) (  this.plusButton.Y ) ), new Rectangle?( OptionsPlusMinus.plusButtonSource ), Color.White * ( this.greyedOut ? 0.33f : 1f ) * ( this.selected == this.options.Count - 1 ? 0.5f : 1f ), 0.0f, Vector2.Zero, ( float ) Game1.pixelZoom, SpriteEffects.None, 0.4f );
             if( OptionsPlusMinus.snapZoomMinus ) {
-                Game1.setMousePosition( slotX + this.minusButton.Center.X, slotY + this.minusButton.Center.Y );
+                Game1.setMousePosition( this.minusButton.Center.X,  this.minusButton.Center.Y );
                 OptionsPlusMinus.snapZoomMinus = false;
             } else if( OptionsPlusMinus.snapZoomPlus ) {
-                Game1.setMousePosition( slotX + this.plusButton.Center.X, slotY + this.plusButton.Center.Y );
+                Game1.setMousePosition( this.plusButton.Center.X,  this.plusButton.Center.Y );
                 OptionsPlusMinus.snapZoomPlus = false;
             }
-            base.draw( b, slotX, slotY );
+            base.draw( b );
         }
     }
 }
